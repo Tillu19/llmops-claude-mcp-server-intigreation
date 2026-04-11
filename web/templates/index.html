@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VEERAOPS | Claude, MCP Server & AWS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-top">
+          <p class="promo-badge">Veera sir multicloud</p>
+          <div class="brand-card">
+            <span class="brand-title">Veera sir Multicloud</span>
+            <span class="brand-subtitle">Hands-on AI and Cloud Training Nareshit</span>
+          </div>
+        </div>
+
+        <div class="scroll-banner" aria-label="Batch update">
+          <div class="scroll-banner-track">
+            <span>New batch is started Mutlicloud devops</span>
+            <span>New batch is started Mutlicloud devops</span>
+            <span>New batch is started Mutlicloud devops</span>
+          </div>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">LLMOps Special Session</p>
+            <h1>
+              Turn <span class="accent-cyan">Claude</span> into an
+              <span class="accent-gold">Actionable Agent</span> using
+              <span class="accent-cyan">MCP Server</span> and
+              <span class="accent-cyan">AWS</span>
+            </h1>
+            <p class="lede">
+              Build an end-to-end workshop demo where the browser, MCP tools, DynamoDB,
+              and Claude work together in one practical order assistant experience.
+            </p>
+
+            <div class="hero-actions">
+              <span class="hero-pill">Live AWS Order Demo</span>
+              <span class="hero-pill">Claude-Powered Support</span>
+              <span class="hero-pill">MCP Tooling Workflow</span>
+            </div>
+
+            <div class="hero-highlights">
+              <div class="highlight-card">
+                <span class="highlight-kicker">What You Build</span>
+                <strong>One screen for orders, lookup, and AI support</strong>
+              </div>
+              <div class="highlight-card">
+                <span class="highlight-kicker">Why It Stands Out</span>
+                <strong>Real workflow between browser UI, AWS data, and Claude</strong>
+              </div>
+            </div>
+          </div>
+
+          <aside class="hero-panel">
+            <div class="orb-stack">
+              <div class="orb orb-main">LLMOps</div>
+              <div class="orb orb-small">AWS</div>
+              <div class="orb orb-small">MCP</div>
+            </div>
+            
+          </aside>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Create Order</h2>
+          <form id="create-order-form">
+            <label>
+              Order ID
+              <input name="orderId" placeholder="1" />
+            </label>
+            <label>
+              Item
+              <input name="item" placeholder="pizza" required />
+            </label>
+            <label>
+              Quantity
+              <input name="quantity" type="number" min="1" value="1" />
+            </label>
+            <label>
+              Customer Name
+              <input name="customerName" placeholder="Vardhan" />
+            </label>
+            <label>
+              Shipping Address
+              <textarea
+                name="shippingAddress"
+                rows="3"
+                placeholder="Flat 12, MG Road, Bengaluru"
+              ></textarea>
+            </label>
+            <button type="submit">Submit Order</button>
+          </form>
+          <pre id="create-order-result" class="result">Waiting for request...</pre>
+        </article>
+
+        <article class="card">
+          <h2>Lookup Order</h2>
+          <form id="lookup-form">
+            <label>
+              Order ID
+              <input name="orderId" placeholder="1" required />
+            </label>
+            <div class="actions">
+              <button type="button" data-action="status">Check Status</button>
+              <button type="button" data-action="details">Get Details</button>
+              <button type="button" data-action="summary">Summarize</button>
+            </div>
+          </form>
+          <pre id="lookup-result" class="result">Order output will appear here.</pre>
+        </article>
+
+        <article class="card card-wide">
+          <h2>Ask AI</h2>
+          <form id="ai-form">
+            <label>
+              Order ID
+              <input name="orderId" placeholder="1" required />
+            </label>
+            <label>
+              Customer Question
+              <textarea
+                name="question"
+                rows="4"
+                placeholder="What is my order status?"
+                required
+              ></textarea>
+            </label>
+            <button type="submit">Ask</button>
+          </form>
+          <pre id="ai-result" class="result">AI response will appear here.</pre>
+        </article>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
