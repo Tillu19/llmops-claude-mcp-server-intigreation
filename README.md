@@ -1,5 +1,6 @@
+![MCP1](./mcp1.png)
+
 # Claude + MCP + AWS Order Assistant
-![Project Architecture](mcp1.png)
 
 This repository is a workshop-style demo that shows how a browser UI, an MCP server, AWS services, and Claude can work together in one practical order-support flow.
 
@@ -15,11 +16,11 @@ The project lets you:
 
 The main pieces in this repo are:
 
-- `mcp-server/workshop_web.py`
+- `web/web.py.py`
   Local Flask UI running on `http://127.0.0.1:3000`
-- `mcp-server/mcp/mcp_server.py`
+- `mcp/mcp_server.py`
   MCP server that exposes tools over `stdio` or HTTP
-- `mcp-server/mcp/order_service.py`
+- `mcp/order_service.py`
   Shared order logic for AWS access and Claude calls
 - `terraform/`
   Infrastructure for API Gateway, Lambda, DynamoDB, and SQS
@@ -38,7 +39,7 @@ The main pieces in this repo are:
                                        v
                             +----------------------+
                             | Flask Web App        |
-                            | workshop_web.py      |
+                            | web.py.py            |
                             +----------+-----------+
                                        |
                          MCP HTTP calls| /mcp/call
@@ -174,21 +175,24 @@ Browser UI
 ```text
 .
 |-- README.md
-|-- mcp-server/
-|   |-- workshop_web.py
+|-- mcp1.png
+|-- mcp/
+|   |-- .env
+|   |-- mcp_server.py
+|   `-- order_service.py
+|-- web/
+|   |-- requirements.txt
+|   |-- web.py.py
 |   |-- templates/
 |   |   `-- index.html
-|   |-- static/
-|   |   |-- app.js
-|   |   `-- styles.css
-|   `-- mcp/
-|       |-- .env
-|       |-- mcp_server.py
-|       `-- order_service.py
+|   `-- static/
+|       |-- app.js
+|       `-- styles.css
 `-- terraform/
     |-- main.tf
     |-- output.tf
     |-- variable.tf
+    |-- lambda.zip
     `-- lambda/
         `-- lambda_function.py
 ```
@@ -212,12 +216,12 @@ python -m venv .venv
 ### 2. Install dependencies
 
 ```powershell
-pip install -r mcp-server\requirements.txt
+pip install -r web\requirements.txt
 ```
 
 ### 3. Configure environment variables
 
-Update `mcp-server/mcp/.env` with your values:
+Update `mcp/.env` with your values:
 
 ```env
 AWS_REGION=us-east-1
@@ -243,7 +247,7 @@ MCP_SERVER_URL=http://127.0.0.1:8000
 HTTP mode:
 
 ```powershell
-python mcp-server\mcp\mcp_server.py --http
+python mcp\mcp_server.py --http
 ```
 
 Or use `MCP_TRANSPORT=stdio` if connecting from an MCP client over standard input/output.
@@ -253,7 +257,7 @@ Or use `MCP_TRANSPORT=stdio` if connecting from an MCP client over standard inpu
 Open a second terminal and run:
 
 ```powershell
-python mcp-server\workshop_web.py
+python web\web.py.py
 ```
 
 ### 3. Open the UI
@@ -291,7 +295,7 @@ This provisions the AWS resources used by the demo, including:
 - DynamoDB
 - SQS
 
-After deployment, make sure `ORDER_API_URL` in `mcp-server/mcp/.env` matches the created API endpoint.
+After deployment, make sure `ORDER_API_URL` in `mcp/.env` matches the created API endpoint.
 
 ## Typical Demo Walkthrough
 
@@ -306,7 +310,7 @@ After deployment, make sure `ORDER_API_URL` in `mcp-server/mcp/.env` matches the
 ## Notes
 
 - The web UI and MCP server are separate processes.
-- `workshop_web.py` runs on port `3000`.
+- `web.py.py` runs on port `3000`.
 - `mcp_server.py` runs on port `8000` in HTTP mode.
 - The UI talks to the MCP server, and the MCP server talks to AWS and Claude.
 
