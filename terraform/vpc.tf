@@ -107,7 +107,7 @@ resource "aws_instance" "mcp_server" {
 }
 
 resource "aws_instance" "web_server" {
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = var.ami
   instance_type          = var.instance_type
 #   key_name               = var.key_name
   subnet_id              = aws_subnet.public_subnet_2.id
