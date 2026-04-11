@@ -238,6 +238,29 @@ def handle_request(message):
 http_app = Flask(__name__)
 
 
+def build_cors_headers():
+    allowed_origin = os.environ.get("MCP_ALLOWED_ORIGIN", "*").strip() or "*"
+    return {
+        "Access-Control-Allow-Origin": allowed_origin,
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    }
+
+
+@http_app.after_request
+def add_cors_headers(response):
+    for header_name, header_value in build_cors_headers().items():
+        response.headers[header_name] = header_value
+    return response
+
+
+@http_app.route("/mcp/call", methods=["OPTIONS"])
+@http_app.route("/mcp/tools", methods=["OPTIONS"])
+@http_app.route("/health", methods=["OPTIONS"])
+def http_options():
+    return ("", 204, build_cors_headers())
+
+
 @http_app.get("/health")
 def health_check():
     config = get_runtime_config()
