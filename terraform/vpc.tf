@@ -93,6 +93,49 @@ resource "aws_security_group" "all_traffic" {
   }
 }
 
+
+resource "aws_iam_role" "mcp_server_role" {
+  name = "order_assistant_mcp_server_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "mcp_server_profile" {
+  name = "order_assistant_mcp_server_profile"
+  role = aws_iam_role.mcp_server_role.name
+}
+
+resource "aws_iam_role_policy" "mcp_server_access" {
+  name = "order_assistant_mcp_server_access"
+  role = aws_iam_role.mcp_server_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "ReadOrdersTable"
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem"
+        ]
+        Resource = aws_dynamodb_table.orders.arn
+      }
+    ]
+  })
+}
+
+
 resource "aws_instance" "mcp_server" {
   ami                         = var.ami
   instance_type               = var.instance_type
@@ -100,6 +143,8 @@ resource "aws_instance" "mcp_server" {
   subnet_id                   = aws_subnet.public_subnet_1.id
   vpc_security_group_ids      = [aws_security_group.all_traffic.id]
   associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.mcp_server_profile.name
+
 
   tags = {
     Name = "MCP-SERVER"
