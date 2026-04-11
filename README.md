@@ -1,4 +1,5 @@
 # Claude + MCP + AWS Order Assistant
+![Project Architecture](mcp.png)
 
 This repository is a workshop-style demo that shows how a browser UI, an MCP server, AWS services, and Claude can work together in one practical order-support flow.
 
