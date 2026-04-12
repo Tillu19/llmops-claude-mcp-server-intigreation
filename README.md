@@ -30,55 +30,35 @@ The main pieces in this repo are:
 ## Architecture Diagram
 
 ```text
-                            +----------------------+
-                            |      Browser UI      |
-                            |  http://127.0.0.1    |
-                            |        :3000         |
-                            +----------+-----------+
-                                       |
-                                       v
-                            +----------------------+
-                            | Flask Web App        |
-                            | web.py.py            |
-                            +----------+-----------+
-                                       |
-                         MCP HTTP calls| /mcp/call
-                                       v
-                            +----------------------+
-                            | MCP Server           |
-                            | mcp_server.py        |
-                            +----------+-----------+
-                                       |
-                                       v
-                            +----------------------+
-                            | order_service.py     |
-                            | Tool business logic  |
-                            +----+-----------+-----+
-                                 |           |
-                    Claude query |           | Order create / lookup
-                                 v           v
-                      +----------------+   +----------------------+
-                      | Anthropic API  |   | AWS API Gateway      |
-                      | Claude         |   +----------+-----------+
-                      +----------------+              |
-                                                      v
-                                            +----------------------+
-                                            | AWS Lambda           |
-                                            | lambda_function.py   |
-                                            +----+------------+----+
-                                                 |            |
-                                                 v            v
-                                       +----------------+  +----------------+
-                                       | DynamoDB       |  | SQS Queue      |
-                                       | Orders table   |  | background jobs|
-                                       +----------------+  +--------+-------+
-                                                                    |
-                                                                    v
-                                                          +--------------------+
-                                                          | Lambda via SQS     |
-                                                          | updates order      |
-                                                          | to processed state |
-                                                          +--------------------+
+                    Browser UI
+   ↓
+Flask Web App
+   ↓
+MCP Server
+   ↓
+order_service.py
+   ↓
+API Gateway
+   ↓
+                +----------------------+
+                |  SINGLE LAMBDA       |
+                |  (lambda_function)   |
+                +----------+-----------+
+                           |
+          ---------------------------------------
+          |                                     |
+          v                                     v
+   DynamoDB (create order)              SQS Queue (send message)
+                                             |
+                                             v
+                                   SAME LAMBDA AGAIN
+                                 (triggered by SQS)
+                                             |
+                                             v
+                              Process Order Update
+                                             |
+                                             v
+                                      DynamoDB update
 ```
 
 ## Architecture Summary
