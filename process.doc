@@ -1,0 +1,209 @@
+🎓 PART 1: BIG PICTURE (say this first)
+
+👉 Tell students:
+
+“We have 2 main files:
+
+MCP server → handles tools and routing
+order_service.py → does real work (AWS + Claude + DB)”
+🧠 PART 2: ARCHITECTURE (draw this first)
+Frontend / AI
+     ↓
+mcp.py (TOOL LAYER)
+     ↓
+order_service.py (LOGIC LAYER)
+     ↓
+AWS + Claude AI
+📦 FILE 1: mcp.py (TOOL SERVER)
+🔹 LINE 1–10: Imports
+
+👉 What to say:
+
+“We import Flask, system tools, and order_service functions.”
+
+Important:
+
+from order_service import place_order, get_order, customer_answer
+
+✔ This means MCP does NOT do logic
+✔ It only uses functions from order_service
+
+🔹 LINE 12–60: TOOLS LIST
+TOOLS = [...]
+
+👉 Explain:
+
+“This is a list of all actions AI or frontend can call.”
+
+Example:
+place_order 🍔
+get_order 📦
+get_order_status 📊
+summarize_order 🧾
+answer_customer_query 🤖
+
+✔ Think of it like a MENU in restaurant
+
+🔹 LINE 62–110: read_message()
+
+👉 Explain simply:
+
+“This is for communication between AI and MCP server using stdio.”
+
+✔ Reads request
+✔ Parses JSON
+✔ Returns message
+
+🔹 LINE 112–135: send_message / response
+
+👉 Explain:
+
+“This sends response back to UI or AI.”
+
+🔹 LINE 140: handle_tool_call (MOST IMPORTANT 🔥)
+
+This is the HEART ❤️
+
+🟢 TOOL: place_order
+if tool_name == "place_order":
+LINE 142–150:
+payload = dict(arguments or {})
+
+👉 copy input from user
+
+LINE 151–153:
+if "item" not in payload
+
+👉 validation
+
+✔ item is required
+✔ prevents bad input
+
+LINE 154:
+payload["quantity"] = int(payload["quantity"])
+
+👉 convert string → number
+
+🚨 LINE 155 (IMPORTANT LINE)
+data, status_code = place_order(payload)
+
+👉 SAY THIS TO STUDENTS:
+
+“THIS is where MCP calls backend logic (order_service.py)”
+
+✔ NOT AWS yet
+✔ Just Python function call
+
+LINE 156–160:
+return text_result(...)
+
+👉 returns response to user
+
+📦 FILE 2: order_service.py (REAL WORK FILE)
+🔹 LINE 1–20: Imports + config
+
+👉 Explain:
+
+“This file connects to AWS + Claude AI”
+
+Important:
+
+boto3.resource("dynamodb")
+
+✔ connects to DynamoDB
+
+🔹 LINE 25–40: get_order()
+table.get_item(Key={"orderId": order_id})
+
+👉 THIS is AWS call
+
+✔ reads DynamoDB
+✔ returns order data
+
+🔹 LINE 42–55: build_summary()
+
+👉 simple formatting function
+
+✔ converts order → human text
+
+🔹 LINE 60–90: ask_claude()
+
+👉 Explain:
+
+“This sends order data to Claude AI for smart answers”
+
+LINE 70:
+urlrequest.Request(CLAUDE_MESSAGES_URL)
+
+👉 THIS is API call to:
+
+Anthropic
+
+✔ sends prompt
+✔ gets AI response
+
+🔹 LINE 95–110: place_order()
+
+👉 VERY IMPORTANT 🔥
+
+LINE 100:
+urlrequest.Request(ORDER_API_URL)
+
+👉 THIS is AWS API Gateway call
+
+✔ sends order to backend system
+
+FLOW after this:
+API Gateway → Lambda → SQS → DynamoDB
+🔹 LINE 120–135: customer_answer()
+order = get_order(order_id)
+
+👉 Step 1: get data from DynamoDB
+
+ask_claude(order, question)
+
+👉 Step 2: send to AI (Claude)
+
+🧠 FINAL FLOW (VERY IMPORTANT FOR STUDENTS)
+🟢 Place Order Flow
+User
+ ↓
+mcp.py (handle_tool_call)
+ ↓
+order_service.place_order()
+ ↓
+API Gateway
+ ↓
+Lambda
+ ↓
+SQS
+ ↓
+DynamoDB
+🟡 Get Order Flow
+User
+ ↓
+mcp.py
+ ↓
+order_service.get_order()
+ ↓
+DynamoDB
+🤖 Ask Question Flow
+User question
+ ↓
+mcp.py
+ ↓
+order_service.customer_answer()
+ ↓
+DynamoDB + Claude AI
+🧾 SIMPLE EXPLANATION FOR STUDENTS
+
+You can literally say:
+
+“MCP is like a receptionist that receives requests.
+order_service is the kitchen that does real work.
+AWS is the backend system that stores and processes data.
+Claude AI is the smart assistant that generates answers.”
+
+🎯 ONE-LINE SUMMARY (for exam)
+
+MCP server exposes tools and routes requests, while order_service handles actual business logic including AWS operations and Claude AI integration.
